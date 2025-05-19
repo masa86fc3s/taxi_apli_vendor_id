@@ -69,7 +69,7 @@ def update_graph(selected_company):
         xaxis_title="日付",
         yaxis_title="乗車数",
         margin=dict(l=40, r=40, t=60, b=40),
-        font=dict(family="Arial", size=14, color="#333")
+        font=dict(family="Arial", size=14, color="#444")
     )
     return fig
 
