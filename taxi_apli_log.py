@@ -5,7 +5,7 @@ from sklearn.metrics import mean_squared_error
 import joblib
 
 # データ読み込み
-df = pd.read_csv("taxi_apli_log.csv")
+df = pd.read_csv("taxi_data_log.csv")
 
 # 説明変数と目的変数
 features = [
@@ -26,7 +26,8 @@ model.fit(X_train, y_train)
 
 # 評価
 preds = model.predict(X_test)
-rmse = mean_squared_error(y_test, preds, squared=False)
+mse = mean_squared_error(y_test, preds)
+rmse = mse ** 0.5
 print(f"RMSE: {rmse:.2f}")
 
 # モデル保存
