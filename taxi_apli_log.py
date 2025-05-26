@@ -8,15 +8,16 @@ import joblib
 df = pd.read_csv("taxi_data_log.csv", nrows=500000)
 
 
+"""""
 # 説明変数と目的変数
 features = [
     "vendor_id", "pickup_location_id_int", "dropoff_location_id_int",
     "weekday", "time_of_day", "passenger_count"
 ]
 target = "fare_amount"
-
-X = df[features]
-y = df[target]
+"""
+X = df.drop('fare_amount',axis =1)
+y = df['fare_amount']
 
 # 学習・テストに分割
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
