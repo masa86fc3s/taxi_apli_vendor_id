@@ -5,7 +5,8 @@ from sklearn.metrics import mean_squared_error
 import joblib
 
 # データ読み込み
-df = pd.read_csv("taxi_data_log.csv")
+df = pd.read_csv("taxi_data_log.csv", nrows=1000)
+
 
 # 説明変数と目的変数
 features = [
