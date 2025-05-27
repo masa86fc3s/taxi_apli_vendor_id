@@ -24,29 +24,59 @@ def predict_api():
 
 # レイアウト
 app.layout = html.Div([
-    html.H1("🚕 NY タクシー料金予測アプリ"),
+    html.Div([  # ←内部レイアウト（変更せず）
+        html.H1("🚕 NY タクシー料金予測アプリ", style={'textAlign': 'center'}),
+        html.Div([
+        dcc.Input(id='vendor_id', type='number', placeholder='Vendor ID (1 or 2)', min=1, step=1),
+        html.Div(id='vendor_id-error', style={'color': 'red', 'fontSize': '12px'}),
 
-    dcc.Input(id='vendor_id', type='number', placeholder='Vendor ID (1 or 2)', min=1, step=1),
-    html.Div(id='vendor_id-error', style={'color': 'red', 'fontSize': '12px'}),
+        dcc.Input(id='pickup_id', type='number', placeholder='Pickup Location ID (1~265)'),
+        html.Div(id='pickup_id-error', style={'color': 'red', 'fontSize': '12px'}),
 
-    dcc.Input(id='pickup_id', type='number', placeholder='Pickup Location ID (1~265)'),
-    html.Div(id='pickup_id-error', style={'color': 'red', 'fontSize': '12px'}),
+        dcc.Input(id='dropoff_id', type='number', placeholder='Dropoff Location ID (1~265)'),
+        html.Div(id='dropoff_id-error', style={'color': 'red', 'fontSize': '12px'}),
 
-    dcc.Input(id='dropoff_id', type='number', placeholder='Dropoff Location ID (1~265)'),
-    html.Div(id='dropoff_id-error', style={'color': 'red', 'fontSize': '12px'}),
+        dcc.Input(id='weekday', type='number', placeholder='Weekday (0=Mon)', min=0, max=6),
+        html.Div(id='weekday-error', style={'color': 'red', 'fontSize': '12px'}),
 
-    dcc.Input(id='weekday', type='number', placeholder='Weekday (0=Mon)', min=0, max=6),
-    html.Div(id='weekday-error', style={'color': 'red', 'fontSize': '12px'}),
+        dcc.Input(id='time_of_day', type='number', placeholder='Time of Day (0:morning~3:midnight)'),
+        html.Div(id='time_of_day-error', style={'color': 'red', 'fontSize': '12px'}),
 
-    dcc.Input(id='time_of_day', type='number', placeholder='Time of Day (0:morning~3:midnight)'),
-    html.Div(id='time_of_day-error', style={'color': 'red', 'fontSize': '12px'}),
+        dcc.Input(id='passenger_count', type='number', placeholder='Passenger Count (1~6)', min=1),
+        html.Div(id='passenger_count-error', style={'color': 'red', 'fontSize': '12px'}),
 
-    dcc.Input(id='passenger_count', type='number', placeholder='Passenger Count (1~6)', min=1),
-    html.Div(id='passenger_count-error', style={'color': 'red', 'fontSize': '12px'}),
+        html.Button('予測する', id='predict-button', n_clicks=0,
+                    style={'marginTop': '10px', 'padding': '10px', 'fontSize': '16px'}),
+        html.Div(id='output', style={'marginTop': '20px', 'fontWeight': 'bold'})
+    ], style={
+            'backgroundColor': 'yellow',
+            'padding': '30px',
+            'borderRadius': '10px',
+            'boxShadow': '0 2px 8px rgba(0,0,0,0.1)',
+            'display': 'flex',
+            'flexDirection': 'column',
+            'gap': '12px',
+            'width': '70%' ,
+            'margin': 'auto'
+        })
+    ], style={  # 内側レイアウトのスタイル
+        'display': 'flex',
+        'flexDirection': 'column',
+        'gap': '10px',
+        'width': '1000px',
+        'margin': 'auto',
+        'padding': '20px',
+        'backgroundColor': '#f0f8ff',
+        'borderRadius': '10px',
+        'boxShadow': '0px 0px 10px rgba(0, 0, 0, 0.1)',
+        'minHeight': '100vh'
+    })
+], style={  # ← 外側のwrapperに背景色を設定
+    'backgroundColor': '#e6f2ff',  # ← 全体背景（例：淡いブルー）
+    'minHeight': '100vh',          # ← 全画面の高さを確保
+    'padding': '30px'              # ← 余白もつけるとバランス良く見えます
+})
 
-    html.Button('予測する', id='predict-button', n_clicks=0),
-    html.Div(id='output')
-], style={'display': 'flex', 'flexDirection': 'column', 'gap': '10px', 'width': '400px', 'margin': 'auto'})
 
 # 各入力欄のリアルタイムバリデーション
 @app.callback(Output('vendor_id-error', 'children'), Input('vendor_id', 'value'))
