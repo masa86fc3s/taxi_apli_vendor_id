@@ -5,7 +5,7 @@ import joblib
 from flask import request, jsonify
 
 # モデル読み込み
-model = joblib.load("fare_predictor.pkl")
+model = joblib.load("lgb_model.pkl")
 
 # Dashアプリ初期化
 app = dash.Dash(__name__)
