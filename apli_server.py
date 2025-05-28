@@ -39,7 +39,7 @@ app.layout = html.Div([
         dcc.Input(id='weekday', type='number', placeholder='Weekday (0=Mon)', min=0, max=6),
         html.Div(id='weekday-error', style={'color': 'red', 'fontSize': '12px'}),
 
-        dcc.Input(id='time_of_day', type='number', placeholder='Time of Day (0:morning~3:midnight)'),
+        dcc.Input(id='time_of_day', type='number', placeholder='Time of Day (0:morning~3:midnight)', min=0, max=3),
         html.Div(id='time_of_day-error', style={'color': 'red', 'fontSize': '12px'}),
 
         dcc.Input(id='passenger_count', type='number', placeholder='Passenger Count (1~6)', min=1),
