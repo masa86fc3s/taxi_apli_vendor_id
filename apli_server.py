@@ -173,4 +173,4 @@ def predict(n_clicks, vendor_id, pickup_id, dropoff_id, weekday, time_of_day, pa
 
 # アプリ起動
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run(debug=True)
