@@ -10,7 +10,7 @@ from sklearn.model_selection import KFold
 
 
 # データ読み込み
-df = pd.read_csv("taxi_data_log.csv", nrows=500000)
+df = pd.read_csv("taxi_data_log.csv")
 
 # 説明変数と目的変数
 features = [

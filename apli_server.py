@@ -115,8 +115,8 @@ def validate_weekday(v):
 def validate_time_of_day(v):
     if v is None:
         return "時間帯を入力してください。"
-    if not (0 <= v <= 23.99):
-        return "時間帯は 0.0 ～ 23.99 の間で入力してください。"
+    if not (0 <= v <= 3):
+        return "時間帯は 0 ～ 3 の間で入力してください。"
     return ""
 
 @app.callback(Output('passenger_count-error', 'children'), Input('passenger_count', 'value'))
@@ -151,8 +151,8 @@ def predict(n_clicks, vendor_id, pickup_id, dropoff_id, weekday, time_of_day, pa
         return "エラー: Dropoff Location ID は 1 ～ 265 の範囲で入力してください。"
     if weekday is None or weekday not in range(7):
         return "エラー: 曜日は 0～6 を入力してください。"
-    if time_of_day is None or not (0 <= time_of_day <= 23.99):
-        return "エラー: 時間帯は 0.0～23.99 の範囲で入力してください。"
+    if time_of_day is None or not (0 <= time_of_day <= 3):
+        return "エラー: 時間帯は 0～3 の範囲で入力してください。"
     if passenger_count is None or passenger_count < 1:
         return "エラー: 乗客数は 1 以上を入力してください。"
 
@@ -173,4 +173,4 @@ def predict(n_clicks, vendor_id, pickup_id, dropoff_id, weekday, time_of_day, pa
 
 # アプリ起動
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=8050)

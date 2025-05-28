@@ -5,7 +5,7 @@ from sklearn.metrics import mean_squared_error
 import joblib
 
 # データ読み込み
-df = pd.read_csv("taxi_data_log.csv", nrows=500000)
+df = pd.read_csv("taxi_data_log.csv")
 
 
 
