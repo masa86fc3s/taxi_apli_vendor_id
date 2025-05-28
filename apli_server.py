@@ -174,3 +174,4 @@ def predict(n_clicks, vendor_id, pickup_id, dropoff_id, weekday, time_of_day, pa
 # アプリ起動
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=8050)
+    #app.run(debug=True, host="127.0.0.1", port=8050)
