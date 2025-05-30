@@ -2,9 +2,7 @@ import dash
 from dash import dcc, html, Input, Output, State
 import pandas as pd
 import pickle
-
 import boto3
-import pickle
 import io
 
 # S3の情報
@@ -62,7 +60,7 @@ app.layout = html.Div([
         ]),
 
         html.Div([
-            html.Label("⏰ 時間帯 (0=深夜, 1=朝, 2=昼, 3=夜):"),
+            html.Label("⏰ 時間帯 (0=朝, 1=昼, 2=夜, 3=深夜):"),
             html.Br(),  # 👈 改行を追加
             dcc.Input(id='time_of_day', type='number'),
             html.Div(id='time_of_day-error', style={'color': 'red', 'fontSize': '16px'})
