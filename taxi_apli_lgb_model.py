@@ -14,10 +14,14 @@ df = pd.read_csv("taxi_data_log.csv")
 
 # 説明変数と目的変数
 features = [
-    "vendor_id", "pickup_location_id_int", "dropoff_location_id_int",
-    "weekday", "time_of_day", "passenger_count"
+    "trip_distance",
+    "pickup_location_id_int",
+    "dropoff_location_id_int",
+    "weekday",
+    "time_of_day",
 ]
-target = "fare_amount"
+
+target = "total_amount"
 
 X = df[features]
 y = df[target]
