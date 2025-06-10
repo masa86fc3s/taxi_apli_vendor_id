@@ -5,68 +5,98 @@ import pickle
 import boto3
 import io
 
-# S3の情報
+# ===============================
+# S3からモデルをロード
+# ===============================
 bucket_name = 'taxi-model-storage'
 object_key = 'lgb_model.pkl'
-
-# S3クライアント作成
-s3 = boto3.client('s3', region_name='ap-southeast-2') 
-
-# S3オブジェクトをメモリに読み込む
+s3 = boto3.client('s3', region_name='ap-southeast-2')
 response = s3.get_object(Bucket=bucket_name, Key=object_key)
 body = response['Body'].read()
-
-# メモリ上のバイナリデータをpickleでロード
 model = pickle.load(io.BytesIO(body))
 
-"""""
-# モデル読み込み
-with open('lgb_model.pkl', 'rb') as f:
-    model = pickle.load(f)
-"""
 
+# ===============================
+# S3からCSVを読み込む
+# ===============================
+bucket_name = 'taxi-model-storage'
+csv_key = 'nyc_taxi_zones_latlon.csv'
+
+s3 = boto3.client('s3', region_name='ap-southeast-2')
+response = s3.get_object(Bucket=bucket_name, Key=csv_key)
+csv_body = response['Body'].read()
+
+# pandasでCSVとして読み込む
+zone_df = pd.read_csv(io.BytesIO(csv_body))
+
+# オプションリストを作成
+zone_df['label'] = zone_df['Borough'] + " - " + zone_df['Zone']
+zone_options = [
+    {'label': label, 'value': loc_id}
+    for label, loc_id in zip(zone_df['label'], zone_df['LocationID'])
+]
+
+
+# ===============================
+# Dash アプリレイアウト
+# ===============================
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
     html.H1("🚕 タクシー料金予測アプリ", style={'textAlign': 'center'}),
 
     html.Div([
-        html.Div([
-            html.Label("🚗 Trip Distance (例: 2.5):"),
-            html.Br(),  # 👈 改行を追加
-            dcc.Input(id='trip_distance', type='number', step=0.1),
-            html.Div(id='trip_distance-error', style={'color': 'red', 'fontSize': '16px'})
-        ]),
+        html.Label("🚗 Trip Distance (km):"),
+        dcc.Dropdown(
+            id='trip_distance',
+            options=[{'label': str(round(d, 1)), 'value': d} for d in [i * 0.5 for i in range(1, 101)]],
+            placeholder="距離を選んでください",
+            style={'width': '300px'}
+        ),
+        html.Div(id='trip_distance-error', style={'color': 'red'}),
 
-        html.Div([
-            html.Label("📍 Pickup Location ID (1〜265):"),
-            html.Br(),  # 👈 改行を追加
-            dcc.Input(id='pickup_id', type='number'),
-            html.Div(id='pickup_id-error', style={'color': 'red', 'fontSize': '16px'})
-        ]),
+        html.Label("📍 Pickup Location:"),
+        dcc.Dropdown(
+            id='pickup_id',
+            options=zone_options,
+            placeholder="Pickup 地点を選んでください",
+            style={'width': '300px'}
+        ),
+        html.Div(id='pickup_id-error', style={'color': 'red'}),
 
-        html.Div([
-            html.Label("🏁 Dropoff Location ID (1〜265):"),
-            html.Br(),  # 👈 改行を追加
-            dcc.Input(id='dropoff_id', type='number'),
-            html.Div(id='dropoff_id-error', style={'color': 'red', 'fontSize': '16px'})
-        ]),
+        html.Label("🏁 Dropoff Location:"),
+        dcc.Dropdown(
+            id='dropoff_id',
+            options=zone_options,
+            placeholder="Dropoff 地点を選んでください",
+            style={'width': '300px'}
+        ),
+        html.Div(id='dropoff_id-error', style={'color': 'red'}),
 
-        html.Div([
-            html.Label("📆 曜日 (0=Mon〜6=Sun):"),
-            html.Br(),  # 👈 改行を追加
-            dcc.Input(id='weekday', type='number'),
-            html.Div(id='weekday-error', style={'color': 'red', 'fontSize': '16px'})
-        ]),
+        html.Label("📆 曜日:"),
+        dcc.Dropdown(
+            id='weekday',
+            options=[{'label': label, 'value': val} for label, val in zip(['月曜', '火曜', '水曜', '木曜', '金曜', '土曜', '日曜'], range(7))],
+            placeholder="曜日を選んでください",
+            style={'width': '300px'}
+        ),
+        html.Div(id='weekday-error', style={'color': 'red'}),
 
-        html.Div([
-            html.Label("⏰ 時間帯 (0=朝, 1=昼, 2=夜, 3=深夜):"),
-            html.Br(),  # 👈 改行を追加
-            dcc.Input(id='time_of_day', type='number'),
-            html.Div(id='time_of_day-error', style={'color': 'red', 'fontSize': '16px'})
-        ]),
+        html.Label("⏰ 時間帯:"),
+        dcc.Dropdown(
+            id='time_of_day',
+            options=[
+                {'label': '朝 (0)', 'value': 0},
+                {'label': '昼 (1)', 'value': 1},
+                {'label': '夜 (2)', 'value': 2},
+                {'label': '深夜 (3)', 'value': 3}
+            ],
+            placeholder="時間帯を選んでください",
+            style={'width': '300px'}
+        ),
+        html.Div(id='time_of_day-error', style={'color': 'red'}),
 
-        html.Button("予測する", id='predict-button', n_clicks=0, 
+        html.Button("予測する", id='predict-button', n_clicks=0,
                     style={'marginTop': '20px', 'padding': '10px', 'fontSize': '16px'}),
         html.Div(id='output', style={'marginTop': '30px', 'fontWeight': 'bold'})
     ], style={
@@ -78,8 +108,8 @@ app.layout = html.Div([
         'margin': 'auto',
         'display': 'flex',
         'flexDirection': 'column',
-        'alignItems': 'center',  # ← ここで中央寄せに！
-        'textAlign': 'center',   # ← 子要素のテキストも中央に！
+        'alignItems': 'center',
+        'textAlign': 'center',
         'gap': '20px'
     })
 ], style={
@@ -87,16 +117,16 @@ app.layout = html.Div([
     'minHeight': '100vh',
     'padding': '50px',
     'display': 'flex',
-    'flexDirection': 'column',  # 外側も縦方向
+    'flexDirection': 'column',
     'gap': '20px',
-    'alignItems': 'center',     # 中央寄せ
+    'alignItems': 'center',
     'borderRadius': '10px',
     'boxShadow': '0px 0px 10px rgba(0, 0, 0, 0.1)'
 })
 
-
-
+# ===============================
 # バリデーション callbacks
+# ===============================
 @app.callback(Output('trip_distance-error', 'children'), Input('trip_distance', 'value'))
 def validate_trip_distance(v):
     if v is None:
@@ -137,7 +167,9 @@ def validate_time_of_day(v):
         return "0〜3の範囲で入力してください。"
     return ""
 
+# ===============================
 # 予測処理
+# ===============================
 @app.callback(
     Output('output', 'children'),
     Input('predict-button', 'n_clicks'),
@@ -176,6 +208,8 @@ def predict(n_clicks, trip_distance, pickup_id, dropoff_id, weekday, time_of_day
     except Exception as e:
         return f"エラーが発生しました: {str(e)}"
 
+# ===============================
 # 実行
+# ===============================
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run(debug=True, host="127.0.0.1", port=8050)
