@@ -73,7 +73,7 @@ def objective(trial):
 
 # --- Optunaによるチューニング ---
 study = optuna.create_study(direction='minimize')
-study.optimize(objective, n_trials=20)
+study.optimize(objective, n_trials=2)
 
 print(f"\n✅ Best trial RMSE: {study.best_value:.4f}")
 print("Best parameters:")
