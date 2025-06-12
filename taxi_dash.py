@@ -212,4 +212,6 @@ def predict(n_clicks, trip_distance, pickup_id, dropoff_id, weekday, time_of_day
 # 実行
 # ===============================
 if __name__ == '__main__':
-    app.run(debug=True, host="127.0.0.1", port=8050)
+    #app.run(debug=True, host="127.0.0.1", port=8050)
+    #ec2上で起動させるならこっち
+    app.run(debug=True, host="0.0.0.0", port=8050)
