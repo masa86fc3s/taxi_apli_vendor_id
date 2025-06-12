@@ -1,10 +1,11 @@
-# データ処理
 pandas
 numpy
-
-# 可視化
 matplotlib
 seaborn
-
-# 機械学習
 scikit-learn
+lightgbm
+optuna
+boto3
+dash
+io
+pickle
